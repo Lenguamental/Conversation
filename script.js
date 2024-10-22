@@ -81,7 +81,7 @@ function showLessonOptions(level) {
     currentLesson = level;
     currentQuestionIndex = 0; // Reset the question index
     const topics = Object.keys(questions[level]);
-    let lessonContainer = document.getElementById('lessonContainer');
+    const lessonContainer = document.getElementById('lessonContainer');
     lessonContainer.innerHTML = ''; // Clear previous options
 
     topics.forEach(topic => {
@@ -104,21 +104,20 @@ function startRecording(topic) {
     startButton.innerText = 'START';
     startButton.onclick = () => {
         startButton.style.display = 'none'; // Hide start button
-        startQuestion();
+        showTimer(); // Show the timer
+        askQuestion(); // Start asking questions
     };
     questionContainer.appendChild(startButton);
 }
 
-// Function to Start Question Flow
-function startQuestion() {
+// Function to Show Timer
+function showTimer() {
     const timer = document.createElement('div');
     timer.className = 'timer';
     const timerBar = document.createElement('div');
     timerBar.className = 'timer-bar';
     timer.appendChild(timerBar);
     document.getElementById('questionContainer').appendChild(timer);
-    
-    askQuestion();
 }
 
 // Function to Ask Questions
@@ -201,6 +200,7 @@ function finishRecording() {
     restartButton.className = 'button';
     restartButton.innerText = 'Empezar de Nuevo';
     restartButton.onclick = () => {
+        questionContainer.innerHTML = ''; // Clear the question container
         currentQuestionIndex = 0; // Reset question index
         showLessonOptions(currentLesson); // Show lesson options again
     };
@@ -215,7 +215,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const button = document.createElement('button');
         button.className = 'button';
         button.innerText = level;
-        button.onclick = () => showLessonOptions(level);
+        button.onclick = () => {
+            // Hide level buttons
+            levelButtonsContainer.innerHTML = ''; // Clear level buttons
+            showLessonOptions(level);
+        };
         levelButtonsContainer.appendChild(button);
     });
 
