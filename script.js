@@ -3,7 +3,6 @@ const lessons = {
         title: "Conversación Básica",
         topics: {
             "Introducing Yourself": {
-                title: "Introducing Yourself",
                 questions: [
                     { text: "What is your name?", time: 5 },
                     { text: "How old are you?", time: 5 },
@@ -16,7 +15,6 @@ const lessons = {
                 ]
             },
             "Daily Routines": {
-                title: "Daily Routines",
                 questions: [
                     { text: "What time do you usually wake up?", time: 10 },
                     { text: "What do you usually have for breakfast?", time: 8 },
@@ -29,7 +27,6 @@ const lessons = {
                 ]
             },
             "Using Time Expressions": {
-                title: "Using Time Expressions",
                 questions: [
                     { text: "What do you usually do in the morning?", time: 10 },
                     { text: "What do you like to do after lunch?", time: 8 },
@@ -40,14 +37,13 @@ const lessons = {
                     { text: "How do you spend your weekends?", time: 10 },
                     { text: "What is your favorite time of day?", time: 9 }
                 ]
-            },
+            }
         }
     },
     intermediate: {
         title: "Conversación Intermedia",
         topics: {
             "Traveling": {
-                title: "Traveling",
                 questions: [
                     { text: "Where was your last vacation?", time: 8 },
                     { text: "What is your dream destination?", time: 9 },
@@ -60,7 +56,6 @@ const lessons = {
                 ]
             },
             "Hobbies": {
-                title: "Hobbies",
                 questions: [
                     { text: "What is your favorite hobby?", time: 6 },
                     { text: "How often do you practice your hobby?", time: 7 },
@@ -71,14 +66,13 @@ const lessons = {
                     { text: "What skills have you gained from your hobby?", time: 9 },
                     { text: "What hobby do you think is overrated?", time: 8 }
                 ]
-            },
+            }
         }
     },
     advanced: {
         title: "Conversación Avanzada",
         topics: {
             "Career Goals": {
-                title: "Career Goals",
                 questions: [
                     { text: "What are your career aspirations?", time: 10 },
                     { text: "What skills are essential for your job?", time: 8 },
@@ -91,7 +85,6 @@ const lessons = {
                 ]
             },
             "Future Trends": {
-                title: "Future Trends",
                 questions: [
                     { text: "What technological trends do you foresee?", time: 10 },
                     { text: "How do you think the job market will change?", time: 8 },
@@ -102,7 +95,7 @@ const lessons = {
                     { text: "What is your opinion on sustainable living?", time: 8 },
                     { text: "What trends do you see in education?", time: 9 }
                 ]
-            },
+            }
         }
     }
 };
@@ -125,7 +118,7 @@ function showLesson(lesson) {
         <div class="menu">
             ${Object.keys(currentLesson.topics).map(topicKey => `
                 <button class="button" onclick="showTopic('${topicKey}')">
-                    ${currentLesson.topics[topicKey].title}
+                    ${topicKey}
                 </button>
             `).join('')}
         </div>
@@ -137,14 +130,12 @@ function showTopic(topicKey) {
     currentQuestionIndex = 0;
     audioChunks = []; // Reset audio chunks
     document.getElementById('lessonContainer').innerHTML = `
-        <h2>${currentTopic.title}</h2>
+        <h2>${topicKey}</h2>
         <h3>Click "START" to begin</h3>
         <button class="button" onclick="startRecording()">START</button>
         <div id="questionContainer" style="display:none;">
             <div id="question">${currentTopic.questions[currentQuestionIndex].text}</div>
-            <div id="timer" class="countdown">
-                <div id="countdownValue">${currentTopic.questions[currentQuestionIndex].time}</div>
-            </div>
+            <div id="timer" class="countdown"></div>
         </div>
     `;
 }
@@ -186,68 +177,48 @@ function stopRecording() {
         if (currentQuestionIndex < currentTopic.questions.length) {
             showNextQuestion();
         } else {
-            showEndOptions();
+            showOptions();
         }
     };
-}
-
-function startTimer(duration) {
-    let remainingTime = duration;
-    document.getElementById('countdownValue').innerText = remainingTime;
-    timerInterval = setInterval(() => {
-        remainingTime--;
-        document.getElementById('countdownValue').innerText = remainingTime;
-        if (remainingTime <= 0) {
-            clearInterval(timerInterval);
-        }
-    }, 1000);
 }
 
 function showNextQuestion() {
     const question = currentTopic.questions[currentQuestionIndex];
     document.getElementById('question').innerText = question.text;
-    startTimer(question.time); // Start timer for the next question
-    setTimeout(stopRecording, question.time * 1000); // Set timeout for stopping recording
+    startTimer(question.time);
+    setTimeout(stopRecording, question.time * 1000);
 }
 
-function showEndOptions() {
-    document.getElementById('questionContainer').innerHTML = `
-        <h3>Options:</h3>
-        <button class="button" onclick="listenRecording()">Escuchar la Grabación</button>
-        <button class="button" onclick="downloadRecording()">Descargar Grabación</button>
-        <button class="button" onclick="restart()">Empezar de Nuevo</button>
+function startTimer(time) {
+    const timerDisplay = document.getElementById('timer');
+    timerDisplay.innerHTML = `<div class="animation"></div>`; // Use square animation
+    let countdown = time;
+    
+    timerInterval = setInterval(() => {
+        if (countdown <= 0) {
+            clearInterval(timerInterval);
+        }
+        countdown--;
+    }, 1000);
+}
+
+function showOptions() {
+    document.getElementById('questionContainer').innerHTML += `
+        <h3>Recording complete! What would you like to do next?</h3>
+        <button class="button" onclick="restartTopic()">RESTART TOPIC</button>
+        <button class="button" onclick="showLesson(currentLesson.title.toLowerCase())">SELECT ANOTHER TOPIC</button>
     `;
 }
 
-function listenRecording() {
-    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-    const audioUrl = URL.createObjectURL(audioBlob);
-    const audioElement = document.createElement('audio');
-    audioElement.controls = true;
-    audioElement.src = audioUrl;
-    document.getElementById('questionContainer').appendChild(audioElement);
-}
-
-function downloadRecording() {
-    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-    const url = URL.createObjectURL(audioBlob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'recording.wav';
-    a.click();
-}
-
-function restart() {
-    currentLesson = null;
-    currentTopic = null;
-    currentQuestionIndex = 0;
-    audioChunks = [];
+function init() {
     document.getElementById('lessonContainer').innerHTML = `
-        <h1>Bienvenido a Lengua Mental Aplicación de conversación</h1>
-        <div id="lessonContainer"></div>
+        <h2>Select a level:</h2>
+        <div class="menu">
+            <button class="button" onclick="showLesson('basic')">Conversación Básica</button>
+            <button class="button" onclick="showLesson('intermediate')">Conversación Intermedia</button>
+            <button class="button" onclick="showLesson('advanced')">Conversación Avanzada</button>
+        </div>
     `;
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    showLesson('basic'); // Start with basic lessons
-});
+init();
