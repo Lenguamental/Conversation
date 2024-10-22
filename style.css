@@ -13,10 +13,10 @@ body {
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center; /* Center align text */
 }
 
 h1 {
-    text-align: center;
     color: #007BFF;
 }
 
@@ -54,21 +54,19 @@ h3 {
     text-align: center;
 }
 
-.animation {
-    width: 50px;
-    height: 50px;
-    background-color: #007BFF;
-    animation: squareAnimation 1s infinite;
+.rectangle {
+    width: 200px; /* Rectangle width */
+    height: 50px; /* Rectangle height */
+    border: 4px solid #007BFF; /* Rectangle border color */
+    animation: borderAnimation 3s linear forwards; /* Animation for border disappearing */
+    margin: 20px auto; /* Center the rectangle */
 }
 
-@keyframes squareAnimation {
+@keyframes borderAnimation {
     0% {
-        transform: scale(1);
-    }
-    50% {
-        transform: scale(1.5);
+        border-color: #007BFF;
     }
     100% {
-        transform: scale(1);
+        border-color: transparent;
     }
 }
