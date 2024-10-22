@@ -132,7 +132,7 @@ function showTopic(topicKey) {
     document.getElementById('lessonContainer').innerHTML = `
         <h2>${topicKey}</h2>
         <h3>Click "START" to begin</h3>
-        <button class="button" onclick="startRecording()">START</button>
+        <button class="button" id="startButton" onclick="startRecording()">START</button>
         <div id="questionContainer" style="display:none;">
             <div id="question" class="question">${currentTopic.questions[currentQuestionIndex].text}</div>
             <div id="timer" class="countdown"></div>
@@ -141,6 +141,7 @@ function showTopic(topicKey) {
 }
 
 function startRecording() {
+    document.getElementById('startButton').style.display = 'none'; // Hide start button
     document.getElementById('questionContainer').style.display = 'block';
     navigator.mediaDevices.getUserMedia({ audio: true })
         .then(stream => {
@@ -164,33 +165,54 @@ function stopRecording() {
         if (currentQuestionIndex < currentTopic.questions.length) {
             showNextQuestion();
         } else {
+            combineRecordings(); // Call combine recordings
             showOptions(audioUrl); // Pass audioUrl to showOptions
         }
     };
+}
+
+function combineRecordings() {
+    // Combine audio chunks into one long recording
+    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+    const audioUrl = URL.createObjectURL(audioBlob);
+    
+    return audioUrl; // Return combined audio URL
 }
 
 function showNextQuestion() {
     const question = currentTopic.questions[currentQuestionIndex];
     document.getElementById('question').innerText = question.text;
     startTimer(question.time);
-    setTimeout(stopRecording, question.time * 1000);
+    navigator.mediaDevices.getUserMedia({ audio: true })
+        .then(stream => {
+            mediaRecorder = new MediaRecorder(stream);
+            mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+            mediaRecorder.start();
+            setTimeout(stopRecording, question.time * 1000);
+        });
 }
 
-function startTimer(time) {
+function startTimer(duration) {
+    let remainingTime = duration;
     const timerDisplay = document.getElementById('timer');
-    timerDisplay.innerHTML = `<div class="rectangle"></div>`; // Use rectangle animation
-    let countdown = time;
     
+    // Set initial timer display
+    timerDisplay.innerHTML = `<div class="rectangle"></div>`;
+    const rectangle = document.querySelector('.rectangle');
+
+    rectangle.style.animation = `width ${duration}s linear forwards`;
+
     timerInterval = setInterval(() => {
-        if (countdown <= 0) {
+        if (remainingTime <= 0) {
             clearInterval(timerInterval);
+            return;
         }
-        countdown--;
+        remainingTime--;
     }, 1000);
 }
 
 function showOptions(audioUrl) {
-    document.getElementById('questionContainer').innerHTML = `
+    document.getElementById('lessonContainer').innerHTML = `
         <h3>Recording complete! What would you like to do next?</h3>
         <audio controls src="${audioUrl}" style="display: block; margin: 20px auto;"></audio>
         <button class="button" onclick="restartTopic()">RESTART TOPIC</button>
