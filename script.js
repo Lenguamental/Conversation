@@ -134,7 +134,7 @@ function showTopic(topicKey) {
         <h3>Click "START" to begin</h3>
         <button class="button" onclick="startRecording()">START</button>
         <div id="questionContainer" style="display:none;">
-            <div id="question">${currentTopic.questions[currentQuestionIndex].text}</div>
+            <div id="question" class="question">${currentTopic.questions[currentQuestionIndex].text}</div>
             <div id="timer" class="countdown"></div>
         </div>
     `;
@@ -159,25 +159,12 @@ function stopRecording() {
         const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
         const audioUrl = URL.createObjectURL(audioBlob);
         
-        // Remove previous audio elements to avoid clutter
-        const previousAudio = document.getElementById('recordedAudio');
-        if (previousAudio) {
-            previousAudio.remove();
-        }
-
-        const audioElement = document.createElement('audio');
-        audioElement.id = 'recordedAudio';
-        audioElement.controls = true;
-        audioElement.src = audioUrl;
-        document.getElementById('questionContainer').appendChild(audioElement);
-        audioChunks = []; // Reset audio chunks
-
         // Proceed to next question
         currentQuestionIndex++;
         if (currentQuestionIndex < currentTopic.questions.length) {
             showNextQuestion();
         } else {
-            showOptions();
+            showOptions(audioUrl); // Pass audioUrl to showOptions
         }
     };
 }
@@ -191,7 +178,7 @@ function showNextQuestion() {
 
 function startTimer(time) {
     const timerDisplay = document.getElementById('timer');
-    timerDisplay.innerHTML = `<div class="animation"></div>`; // Use square animation
+    timerDisplay.innerHTML = `<div class="rectangle"></div>`; // Use rectangle animation
     let countdown = time;
     
     timerInterval = setInterval(() => {
@@ -202,12 +189,17 @@ function startTimer(time) {
     }, 1000);
 }
 
-function showOptions() {
-    document.getElementById('questionContainer').innerHTML += `
+function showOptions(audioUrl) {
+    document.getElementById('questionContainer').innerHTML = `
         <h3>Recording complete! What would you like to do next?</h3>
+        <audio controls src="${audioUrl}" style="display: block; margin: 20px auto;"></audio>
         <button class="button" onclick="restartTopic()">RESTART TOPIC</button>
         <button class="button" onclick="showLesson(currentLesson.title.toLowerCase())">SELECT ANOTHER TOPIC</button>
     `;
+}
+
+function restartTopic() {
+    showTopic(currentTopic);
 }
 
 function init() {
