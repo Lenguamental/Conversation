@@ -1,38 +1,27 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
+    background-color: #f0f4f8;
     color: #333;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    margin: 0;
-}
-
-#app {
     text-align: center;
 }
 
 h1 {
-    color: #4CAF50;
-    margin-bottom: 20px;
-}
-
-h2 {
-    color: #555;
+    margin-top: 20px;
+    font-size: 24px;
 }
 
 .button {
-    background-color: #4CAF50;
-    color: white;
+    background-color: #4CAF50; /* Green */
     border: none;
-    padding: 10px 20px;
+    color: white;
+    padding: 15px 32px;
     text-align: center;
     text-decoration: none;
     display: inline-block;
     font-size: 16px;
     margin: 10px;
     cursor: pointer;
+    border-radius: 5px;
     transition: background-color 0.3s;
 }
 
@@ -41,39 +30,30 @@ h2 {
 }
 
 .timer {
-    margin: 20px auto;
-    width: 300px; /* Width of the timer */
-    height: 10px; /* Height of the timer */
-    background-color: #ddd; /* Background color of the timer */
-    border-radius: 5px; /* Rounded corners */
-    overflow: hidden; /* Hide the overflow */
     position: relative;
+    margin: 20px auto;
+    width: 200px;
+    height: 30px;
+    border: 2px solid #4CAF50;
+    border-radius: 5px;
+    overflow: hidden;
+    background-color: #e0f7e0;
 }
 
 .timer-bar {
+    position: absolute;
+    top: 0;
+    left: 0;
     height: 100%;
-    background-color: #4CAF50; /* Color of the timer */
-    animation: countdown linear forwards; /* Animation for countdown */
+    background-color: #4CAF50;
+    animation: countdown 5s linear forwards; /* Adjust the duration as needed */
 }
 
 @keyframes countdown {
     from {
-        width: 100%; /* Start at full width */
+        width: 100%;
     }
     to {
-        width: 0%; /* End at zero width */
+        width: 0;
     }
-}
-
-#questionContainer {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    margin-top: 20px;
-}
-
-#question {
-    font-size: 24px;
-    margin-bottom: 20px;
 }
