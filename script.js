@@ -28,8 +28,7 @@ const questions = {
             "What is your favorite day of the week?",
             "What do you do on weekends?",
             "What is your favorite season?"
-        ],
-        // Add more topics here
+        ]
     },
     Intermediate: {
         "Travel": [
@@ -51,8 +50,7 @@ const questions = {
             "What is the best meal you've ever had?",
             "What is your favorite dessert?",
             "Do you like trying new foods?"
-        ],
-        // Add more topics here
+        ]
     },
     Advanced: {
         "Technology": [
@@ -74,8 +72,7 @@ const questions = {
             "What is your opinion on renewable energy?",
             "How does pollution affect us?",
             "What is your favorite outdoor activity?"
-        ],
-        // Add more topics here
+        ]
     }
 };
 
@@ -205,34 +202,22 @@ function finishRecording() {
     restartButton.innerText = 'Empezar de Nuevo';
     restartButton.onclick = () => {
         currentQuestionIndex = 0; // Reset question index
-        questionContainer.innerHTML = ''; // Clear previous content
-        startRecording(currentTopic); // Restart recording for the same topic
+        showLessonOptions(currentLesson); // Show lesson options again
     };
     questionContainer.appendChild(restartButton);
 }
 
-// Initialize the App
-function init() {
-    const basicButton = document.createElement('button');
-    basicButton.className = 'button';
-    basicButton.innerText = 'Conversación Básica';
-    basicButton.onclick = () => showLessonOptions('Basic');
+// Start Application
+document.addEventListener('DOMContentLoaded', () => {
+    const levelButtonsContainer = document.createElement('div');
 
-    const intermediateButton = document.createElement('button');
-    intermediateButton.className = 'button';
-    intermediateButton.innerText = 'Conversación Intermedia';
-    intermediateButton.onclick = () => showLessonOptions('Intermediate');
+    Object.keys(questions).forEach(level => {
+        const button = document.createElement('button');
+        button.className = 'button';
+        button.innerText = level;
+        button.onclick = () => showLessonOptions(level);
+        levelButtonsContainer.appendChild(button);
+    });
 
-    const advancedButton = document.createElement('button');
-    advancedButton.className = 'button';
-    advancedButton.innerText = 'Conversación Avanzada';
-    advancedButton.onclick = () => showLessonOptions('Advanced');
-
-    const app = document.getElementById('app');
-    app.appendChild(basicButton);
-    app.appendChild(intermediateButton);
-    app.appendChild(advancedButton);
-}
-
-// Run the app on page load
-window.onload = init;
+    document.getElementById('lessonContainer').appendChild(levelButtonsContainer);
+});
