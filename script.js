@@ -2,9 +2,9 @@
 let currentLesson = null;
 let currentTopic = null;
 let currentQuestionIndex = 0;
-let recordingChunks = [];
+let recordingChunks = [];  // Stores chunks for all questions
 let mediaRecorder = null;
-let audioBlob = null;
+let combinedBlob = null;  // Blob for the final combined recording
 let timerInterval = null;
 
 // Questions for each level and topic
@@ -110,8 +110,11 @@ function startRecording(topic) {
     questionContainer.appendChild(startButton);
 }
 
-// Function to Show Timer
+// Function to Show Timer and Ensure Only One Timer is Visible
 function showTimer(duration) {
+    const previousTimer = document.querySelector('.timer');
+    if (previousTimer) previousTimer.remove(); // Remove the previous timer
+
     const timer = document.createElement('div');
     timer.className = 'timer';
     const timerBar = document.createElement('div');
@@ -144,11 +147,11 @@ function askQuestion() {
             .then(stream => {
                 mediaRecorder = new MediaRecorder(stream);
                 mediaRecorder.ondataavailable = e => {
-                    recordingChunks.push(e.data);
+                    recordingChunks.push(e.data); // Add data to the global array
                 };
+
                 mediaRecorder.onstop = () => {
-                    audioBlob = new Blob(recordingChunks, { type: 'audio/webm' });
-                    recordingChunks = []; // Reset for next recording
+                    // Nothing special here for now, but recording stops after the timer ends.
                 };
 
                 const recordButton = document.createElement('button');
@@ -166,16 +169,19 @@ function askQuestion() {
     }
 }
 
-// Finish Recording
+// Function to Combine All Recordings into One Blob
 function finishRecording() {
     const questionContainer = document.getElementById('questionContainer');
     questionContainer.innerHTML = `<h2>Grabación completa</h2>`;
+
+    // Combine all chunks into one blob
+    combinedBlob = new Blob(recordingChunks, { type: 'audio/webm' });
 
     const playButton = document.createElement('button');
     playButton.className = 'button';
     playButton.innerText = 'Escuchar la Grabación';
     playButton.onclick = () => {
-        const audioURL = URL.createObjectURL(audioBlob);
+        const audioURL = URL.createObjectURL(combinedBlob);
         const audio = new Audio(audioURL);
         audio.play();
     };
@@ -186,7 +192,7 @@ function finishRecording() {
     downloadButton.innerText = 'Descargar Grabación';
     downloadButton.onclick = () => {
         const a = document.createElement('a');
-        a.href = URL.createObjectURL(audioBlob);
+        a.href = URL.createObjectURL(combinedBlob);
         a.download = 'recording.webm';
         a.click();
     };
