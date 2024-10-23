@@ -1,7 +1,7 @@
 body {
     font-family: Arial, sans-serif;
-    background-color: #f0f4f8;
-    color: #333;
+    background-color: #2f2f2f; /* Dark grey background */
+    color: #f0f0f0;
     text-align: center;
 }
 
@@ -11,7 +11,7 @@ h1 {
 }
 
 .button {
-    background-color: #4CAF50; /* Green */
+    background-color: #1a3e75; /* Dark blue button */
     border: none;
     color: white;
     padding: 15px 32px;
@@ -26,7 +26,7 @@ h1 {
 }
 
 .button:hover {
-    background-color: #45a049;
+    background-color: #345d99; /* Lighter blue on hover */
 }
 
 .timer {
@@ -34,7 +34,7 @@ h1 {
     margin: 20px auto;
     width: 200px;
     height: 30px;
-    border: 2px solid #4CAF50;
+    border: 2px solid #1a3e75;
     border-radius: 5px;
     overflow: hidden;
     background-color: #e0f7e0;
@@ -45,8 +45,8 @@ h1 {
     top: 0;
     left: 0;
     height: 100%;
-    background-color: #4CAF50;
-    animation: countdown 5s linear forwards; /* Adjust the duration as needed */
+    background-color: #1a3e75; /* Dark blue timer */
+    animation: countdown linear forwards; /* Add duration dynamically */
 }
 
 @keyframes countdown {
