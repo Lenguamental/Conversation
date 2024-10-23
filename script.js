@@ -5,6 +5,7 @@ let currentQuestionIndex = 0;
 let recordingChunks = [];
 let mediaRecorder = null;
 let audioBlob = null;
+let timerInterval = null;
 
 // Questions for each level and topic
 const questions = {
@@ -104,20 +105,32 @@ function startRecording(topic) {
     startButton.innerText = 'START';
     startButton.onclick = () => {
         startButton.style.display = 'none'; // Hide start button
-        showTimer(); // Show the timer
         askQuestion(); // Start asking questions
     };
     questionContainer.appendChild(startButton);
 }
 
 // Function to Show Timer
-function showTimer() {
+function showTimer(duration) {
     const timer = document.createElement('div');
     timer.className = 'timer';
     const timerBar = document.createElement('div');
     timerBar.className = 'timer-bar';
     timer.appendChild(timerBar);
     document.getElementById('questionContainer').appendChild(timer);
+
+    timerBar.style.animationDuration = `${duration}s`; // Set animation duration
+
+    let timeLeft = duration;
+    timerInterval = setInterval(() => {
+        timeLeft--;
+        if (timeLeft <= 0) {
+            clearInterval(timerInterval);
+            mediaRecorder.stop();
+            currentQuestionIndex++;
+            setTimeout(askQuestion, 1000); // Delay before next question
+        }
+    }, 1000);
 }
 
 // Function to Ask Questions
@@ -144,30 +157,13 @@ function askQuestion() {
                 recordButton.onclick = () => {
                     recordButton.style.display = 'none'; // Hide record button
                     mediaRecorder.start();
-                    startTimer(5); // Set time limit for each question
+                    showTimer(5); // Set time limit for each question
                 };
                 document.getElementById('questionContainer').appendChild(recordButton);
             });
     } else {
         finishRecording(); // If no more questions, finish recording
     }
-}
-
-// Timer Function
-function startTimer(duration) {
-    const timerBar = document.querySelector('.timer-bar');
-    let timeLeft = duration;
-    timerBar.style.animationDuration = `${duration}s`; // Set animation duration
-
-    const interval = setInterval(() => {
-        timeLeft--;
-        if (timeLeft <= 0) {
-            clearInterval(interval);
-            mediaRecorder.stop();
-            currentQuestionIndex++;
-            setTimeout(askQuestion, 1000); // Delay before next question
-        }
-    }, 1000);
 }
 
 // Finish Recording
@@ -195,33 +191,20 @@ function finishRecording() {
         a.click();
     };
     questionContainer.appendChild(downloadButton);
-
-    const restartButton = document.createElement('button');
-    restartButton.className = 'button';
-    restartButton.innerText = 'Empezar de Nuevo';
-    restartButton.onclick = () => {
-        questionContainer.innerHTML = ''; // Clear the question container
-        currentQuestionIndex = 0; // Reset question index
-        showLessonOptions(currentLesson); // Show lesson options again
-    };
-    questionContainer.appendChild(restartButton);
 }
 
 // Start Application
 document.addEventListener('DOMContentLoaded', () => {
     const levelButtonsContainer = document.createElement('div');
-
     Object.keys(questions).forEach(level => {
         const button = document.createElement('button');
         button.className = 'button';
         button.innerText = level;
         button.onclick = () => {
-            // Hide level buttons
-            levelButtonsContainer.innerHTML = ''; // Clear level buttons
+            levelButtonsContainer.innerHTML = ''; // Hide level buttons
             showLessonOptions(level);
         };
         levelButtonsContainer.appendChild(button);
     });
-
     document.getElementById('lessonContainer').appendChild(levelButtonsContainer);
 });
